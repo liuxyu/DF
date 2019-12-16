@@ -46,8 +46,3 @@ class WFDataset(Dataset):
  
     def __len__(self):
         return self.data_len
-
-
-
-if __name__ == "__main__":
-    data = trainDataset("tor_100w_2500tr.npz")

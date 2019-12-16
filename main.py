@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 
-
+NB_CLASSES = 101
 EPOCH = 30
 BATCH_SIZE = 128
 LR = 0.001
@@ -38,7 +38,7 @@ test_loader = DataLoader(full_data, batch_size=BATCH_SIZE,
                                             sampler=test_sampler)
 
 cuda_gpu = torch.cuda.is_available()
-cnn = AWF().float()
+cnn = AWF(NB_CLASSES).float()
 if(cuda_gpu):
     cnn = torch.nn.DataParallel(cnn, device_ids=[0]).cuda()
 optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class DF(nn.Module):
-    def __init__(self):
+    def __init__(self, nb_classes):
         super(DF, self).__init__()
         self.block1 = nn.Sequential(         
             nn.Conv1d(
@@ -70,7 +70,7 @@ class DF(nn.Module):
         )
 
         self.out = nn.Sequential(
-            nn.Linear(512, 101),
+            nn.Linear(512, nb_classes),
         )   
 
     def forward(self, x):
@@ -85,7 +85,7 @@ class DF(nn.Module):
 
 
 class AWF(nn.Module):
-    def __init__(self):
+    def __init__(self, nb_classes):
         super(AWF, self).__init__()
         self.conv1 = nn.Sequential(
             nn.Dropout(0.25),         
@@ -104,7 +104,7 @@ class AWF(nn.Module):
             nn.Flatten(),
             nn.Linear(9952, 500),
             nn.ReLU(),
-            nn.Linear(500, 101)
+            nn.Linear(500, nb_classes)
         )   
 
     def forward(self, x):
