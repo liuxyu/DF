@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-class CNN(nn.Module):
+class DF(nn.Module):
     def __init__(self):
-        super(CNN, self).__init__()
+        super(DF, self).__init__()
         self.block1 = nn.Sequential(         
             nn.Conv1d(
                 in_channels=1,              
@@ -82,4 +82,35 @@ class CNN(nn.Module):
         x = self.fc2(x)          
         output = self.out(x)
         return output, x   
+
+
+class AWF(nn.Module):
+    def __init__(self):
+        super(AWF, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Dropout(0.25),         
+            nn.Conv1d(1, 32, 5, 1, 0),  
+            nn.ReLU(),                     
+            nn.MaxPool1d(4), 
+        )
+
+        self.conv2 = nn.Sequential(
+            nn.Conv1d(32, 32, 5, 1, 0),
+            nn.ReLU(),
+            nn.MaxPool1d(4),
+        )
+
+        self.out = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(9952, 500),
+            nn.ReLU(),
+            nn.Linear(500, 101)
+        )   
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)     
+        output = self.out(x)
+        return output, x   
+
 

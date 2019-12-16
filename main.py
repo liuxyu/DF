@@ -1,5 +1,5 @@
-from model import CNN
-from data import trainDataset, load_data
+from model import DF, AWF
+from data import WFDataset, load_data
 import numpy as np
 import torch
 import torch.nn as nn
@@ -10,7 +10,7 @@ EPOCH = 30
 BATCH_SIZE = 128
 LR = 0.001
 
-full_data = trainDataset("tor_100w_2500tr.npz")
+full_data = WFDataset("./data/tor_100w_2500tr.npz")
 train_split= 0.8
 validate_split = 0.15
 test_split = 0.05
@@ -38,7 +38,7 @@ test_loader = DataLoader(full_data, batch_size=BATCH_SIZE,
                                             sampler=test_sampler)
 
 cuda_gpu = torch.cuda.is_available()
-cnn = CNN().float()
+cnn = AWF().float()
 if(cuda_gpu):
     cnn = torch.nn.DataParallel(cnn, device_ids=[0]).cuda()
 optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)

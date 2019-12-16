@@ -31,7 +31,7 @@ def load_data(path):
     return data, labels
 
 
-class trainDataset(Dataset):
+class WFDataset(Dataset):
     def __init__(self, path):
         self.npzfile = np.load(path)
         self.raw_data = self.npzfile["data"].astype(dtype="float_")
