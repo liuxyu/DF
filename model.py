@@ -45,7 +45,7 @@ class DF(nn.Module):
 
         self.block4 = nn.Sequential(
             nn.Conv1d(128, 256, 8, 1, 0),
-            nn.BatchNorm1d(256),
+            nn.BatchNorm1d(256), 
             nn.ReLU(),
             nn.Conv1d(256, 256, 8, 1, 0),
             nn.BatchNorm1d(256),
@@ -114,3 +114,34 @@ class AWF(nn.Module):
         return output, x   
 
 
+class WF(nn.Module):
+    def __init__(self, nb_classes):
+        super(WF, self).__init__()
+        self.conv1 = nn.Sequential(       
+            nn.Conv1d(1, 32, 8, 1, 0),
+            nn.BatchNorm1d(32), 
+            nn.ELU(),                     
+            nn.MaxPool1d(8, 4, 0),
+            nn.Dropout(0.1), 
+        )
+
+        self.conv2 = nn.Sequential(       
+            nn.Conv1d(32, 64, 8, 1, 0),
+            nn.BatchNorm1d(64), 
+            nn.ELU(),                     
+            nn.MaxPool1d(8, 4, 0),
+            nn.Dropout(0.1), 
+        )
+
+        self.out = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(19776, 500),
+            nn.ReLU(),
+            nn.Linear(500, nb_classes)
+        )   
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)     
+        output = self.out(x)
+        return output, x  

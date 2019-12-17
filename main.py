@@ -1,4 +1,4 @@
-from model import DF, AWF
+from model import DF, AWF, WF
 from data import WFDataset, load_data
 import numpy as np
 import torch
@@ -6,13 +6,13 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 
 NB_CLASSES = 101
-EPOCH = 30
+EPOCH = 10
 BATCH_SIZE = 128
 LR = 0.001
 
 full_data = WFDataset("./data/tor_100w_2500tr.npz")
-train_split= 0.8
-validate_split = 0.15
+train_split= 0.9
+validate_split = 0.05
 test_split = 0.05
 shuffle_dataset = True
 random_seed = 16
@@ -31,14 +31,14 @@ valid_sampler = SubsetRandomSampler(val_indices)
 test_sampler = SubsetRandomSampler(test_indices)
 
 train_loader = DataLoader(full_data, batch_size=BATCH_SIZE, 
-                                           sampler=train_sampler)
+                                            sampler=train_sampler)
 validation_loader = DataLoader(full_data, batch_size=BATCH_SIZE,
                                             sampler=valid_sampler)
 test_loader = DataLoader(full_data, batch_size=BATCH_SIZE,
                                             sampler=test_sampler)
 
 cuda_gpu = torch.cuda.is_available()
-cnn = AWF(NB_CLASSES).float()
+cnn = WF(NB_CLASSES).float()
 if(cuda_gpu):
     cnn = torch.nn.DataParallel(cnn, device_ids=[0]).cuda()
 optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)
@@ -69,16 +69,20 @@ for epoch in range(EPOCH):
             
             size = validation_size
             avg_loss /= size
-            accuracy = 100.0 * corrects/size
+            accuracy = 100.0 * corrects / size
             print('Epoch: {:2d}({:6d}/{}) Evaluation - loss: {:.6f}  acc: {:3.4f}%({}/{})'.format(
                                                                             epoch,
                                                                             step * 128,
-                                                                            dataset_size,
+                                                                            train_size,
                                                                             avg_loss, 
                                                                             accuracy, 
                                                                             corrects, 
                                                                             size))
 
+torch.save(cnn.state_dict(), './model/awf.pkl')
+
+corrects = 0
+avg_loss = 0
 for _, (b_x, b_y) in enumerate(test_loader):
                 b_x = b_x.cuda()
                 b_y = b_y.cuda()
@@ -89,5 +93,5 @@ for _, (b_x, b_y) in enumerate(test_loader):
                             [1].view(b_y.size()).data == b_y.data).sum()
             
 size = test_size
-accuracy = 100.0 * corrects/size
-print(accuracy)
+accuracy = 100.0 * corrects / size
+print("accuracy: {:3.4f}%".format(accuracy))
