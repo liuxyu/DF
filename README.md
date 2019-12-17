@@ -1,2 +1,2 @@
-# A PyTorch version of Deep Fingerprinting
+# A PyTorch Implementation of Deep Fingerprinting
 
